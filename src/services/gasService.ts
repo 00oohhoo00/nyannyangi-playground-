@@ -16,7 +16,14 @@ import { StudentProfile } from '../types';
 const STORAGE_KEY_GAS_CONFIG = 'nyang_gas_config_v1';
 
 // Actual deployed Cloudflare Worker endpoint (relays to Google Apps Script via Worker GAS_URL)
-export const DEFAULT_CLOUDFLARE_WORKER_URL = 'https://nyannyangi-api.uirmlove82.workers.dev/';
+export const DEFAULT_CLOUDFLARE_WORKER_URL = 'https://nyannyangi-apii.urimlove82.workers.dev/';
+
+// Previously used or mistyped Worker hostnames to auto-correct in browser localStorage
+const LEGACY_INVALID_WORKER_HOSTS = [
+  'nyannyangi-api.uirmlove82.workers.dev',
+  'nyannyangi-api.urimlove82.workers.dev',
+  'nyannyangi-apii.uirmlove82.workers.dev',
+];
 
 export function getGasConfig(): GasConfig {
   try {
@@ -24,17 +31,32 @@ export function getGasConfig(): GasConfig {
     if (raw) {
       const parsed = JSON.parse(raw);
       let sUrl = typeof parsed.serverUrl === 'string' ? parsed.serverUrl.trim() : '';
-      // Migrate legacy direct script.google.com URL or empty URL to the deployed Cloudflare Worker
-      if (!sUrl || sUrl.includes('script.google.com')) {
+      const lowerUrl = sUrl.toLowerCase();
+      let wasCorrected = false;
+
+      // Auto-correct empty URL, direct script.google.com URL, or previous mistyped Worker URLs
+      if (
+        !sUrl ||
+        lowerUrl.includes('script.google.com') ||
+        LEGACY_INVALID_WORKER_HOSTS.some((badHost) => lowerUrl.includes(badHost))
+      ) {
         sUrl = DEFAULT_CLOUDFLARE_WORKER_URL;
+        wasCorrected = true;
       }
-      return {
+
+      const config: GasConfig = {
         serverUrl: sUrl,
-        isEnabled: parsed.isEnabled !== undefined ? Boolean(parsed.isEnabled) : true,
-        lastConnectedAt: parsed.lastConnectedAt || null,
-        lastPingStatus: parsed.lastPingStatus || null,
-        lastErrorMessage: parsed.lastErrorMessage || null,
+        isEnabled: wasCorrected ? true : parsed.isEnabled !== undefined ? Boolean(parsed.isEnabled) : true,
+        lastConnectedAt: wasCorrected ? null : parsed.lastConnectedAt || null,
+        lastPingStatus: wasCorrected ? null : parsed.lastPingStatus || null,
+        lastErrorMessage: wasCorrected ? null : parsed.lastErrorMessage || null,
       };
+
+      if (wasCorrected) {
+        saveGasConfig(config);
+      }
+
+      return config;
     }
   } catch (e) {
     console.error('Failed to read GAS config from localStorage', e);

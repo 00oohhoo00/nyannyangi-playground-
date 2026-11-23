@@ -263,20 +263,6 @@ export const GasSettingsModal: React.FC<Props> = ({ onClose, onConfigChanged }) 
                     >
                       ⚡ 배포된 기본 Worker 주소 적용 ({DEFAULT_CLOUDFLARE_WORKER_URL})
                     </button>
-                    {serverUrl.includes('uirmlove82') && (
-                      <button
-                        type="button"
-                        onClick={() => {
-                          sound.playPop();
-                          setServerUrl('https://nyannyangi-api.urimlove82.workers.dev/');
-                          setTestResult(null);
-                        }}
-                        className="px-2 py-1 bg-purple-50 hover:bg-purple-100 text-purple-800 rounded-lg text-[11px] font-bold border border-purple-200 transition-colors cursor-pointer"
-                        title="도메인 철자 교체 (uirm -> urim)"
-                      >
-                        🔄 urimlove82 로 변경
-                      </button>
-                    )}
                   </div>
                 </div>
 
@@ -297,7 +283,7 @@ export const GasSettingsModal: React.FC<Props> = ({ onClose, onConfigChanged }) 
                       setServerUrl(e.target.value);
                       setTestResult(null);
                     }}
-                    placeholder="https://nyannyangi-api.uirmlove82.workers.dev/"
+                    placeholder={DEFAULT_CLOUDFLARE_WORKER_URL}
                     className="flex-1 py-2.5 px-3 text-xs md:text-sm font-mono bg-slate-50 border-2 border-amber-300 rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-amber-200"
                   />
                   <button
