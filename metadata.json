@@ -1,0 +1,7 @@
+{
+  "name": "냥냥이 컴놀이터 (Nyangnyangi Computer Playground)",
+  "description": "초등학교 1~2학년 학생들을 위한 귀엽고 아기자기한 고양이 육성형 컴퓨터 학습 게임 놀이터",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
+
